@@ -1,0 +1,86 @@
+Step 1: Verify the Docker Containers are Running
+
+First, make sure the infrastructure services (ZooKeeper, Kafka, and Kafdrop) are running:
+
+Open a terminal and run:
+
+docker ps
+
+You should see three active containers: zookeeper, kafka, and kafdrop. (Note: If they are not running, start them by navigating to the project root and running docker-compose up -d).
+
+Step 2: Inspect the Kafka Topic in the Kafdrop Web UI
+Open your web browser and navigate to http://localhost:9000.
+
+This loads the Kafdrop dashboard, where you should see the order-events topic listed.
+Click on the topic name to verify its structure: it will display 3 partitions (Partition 0, 1, and 2) and a message retention of 3,600,000 ms (1 hour).
+
+Step 3: Run Consumer A (Status Tracker & State API)
+Consumer A tracks the active order states and exposes an HTTP API for the dashboard.
+
+Open a new terminal window at the project root directory.
+Start Consumer A:
+
+npm run consumer-a
+
+You will see log messages indicating the Express HTTP server has started on http://localhost:5000 and the consumer has successfully connected and subscribed to Kafka.
+
+Step 4: Run Consumer B (Analytics Engine)
+Consumer B tracks event metrics in a separate consumer group.
+
+Open a second terminal window at the project root directory.
+Start Consumer B:
+
+npm run consumer-b
+
+You will see confirmation logs. Every 15 seconds, this terminal will print an formatted analytics snapshot of the event frequencies.
+
+Step 5: Start the Frontend Dashboard Server
+Open a third terminal window at the project root.
+Start the static file server hosting the frontend:
+
+npm run frontend
+
+Open your web browser and navigate to http://localhost:3000.
+You will see the dark-themed dashboard. Under Connection Status, it should show Connected (green), with a placeholder card stating "No active orders being tracked at the moment."
+
+Step 6: Launch the Simulation (Producer) and Observe
+Now, we will generate simulated order status events:
+
+Open a fourth terminal window at the project root.
+Run the producer to simulate 5 orders:
+
+npm run producer -- --orders 5
+
+Observe the interactions across all terminals and screens:
+Producer Terminal: Prints publishing logs, e.g., [SENT] ORD-001 -> PLACED and [SENT] ORD-002 -> PLACED. It will introduce random 2–8s delays between stages.
+
+Consumer A Terminal: Logs status updates in real-time, e.g., [UPDATE] ORD-001: PLACED -> CONFIRMED.
+
+Consumer B Terminal: The 15-second console snapshots will display changing counts per restaurant and status types.
+
+Browser Dashboard (http://localhost:3000): Interactive cards representing ORD-001 through ORD-005 will populate. The progress bars will advance dynamically. When an order transitions to DELIVERED, the card displays a completed status for 4 seconds before fading out and disappearing.
+
+Project Root Directory: A state.json file will be created and overwrite itself every 10 seconds with the active order dictionary. You can open it to watch the states update.
+
+Step 7: Try the Offset Experiment (Verify Resiliency)
+This experiment demonstrates how Kafka tracks progress so that no messages are lost if a service goes down:
+
+While the producer is actively running, go to the Consumer A terminal (Step 3) and press Ctrl+C to terminate the process.
+Go to the Producer terminal (Step 6) and start a new simulation run:
+
+npm run producer -- --orders 5
+
+Observe that Consumer B is still running and processing these events, but the Browser Dashboard shows "Offline" under connection status because Consumer A is down.
+Wait 10–15 seconds to allow the producer to send several events.
+
+Restart Consumer A in its terminal:
+
+npm run consumer-a
+
+Result: Consumer A will instantly catch up, processing all the events published while it was offline. This is because Kafka stored the last processed offset for the status-tracker group, allowing it to seamlessly resume without data loss.
+
+Run this command in your PowerShell terminal to stop all running Node.js tasks:
+
+Stop-Process -Name node -Force
+
+(This will free up ports 5000 and 3000 immediately by stopping Consumer A, Consumer B, and the Frontend server).
