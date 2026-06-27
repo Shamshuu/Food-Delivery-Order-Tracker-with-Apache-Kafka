@@ -1,0 +1,17 @@
+{
+  "name": "food-delivery-order-tracker",
+  "version": "1.0.0",
+  "description": "Real-time food delivery order tracker using Apache Kafka",
+  "main": "index.js",
+  "scripts": {
+    "producer": "node producer.js",
+    "consumer-a": "node consumer_a.js",
+    "consumer-b": "node consumer_b.js",
+    "frontend": "node frontend/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "kafkajs": "^2.2.4"
+  }
+}
