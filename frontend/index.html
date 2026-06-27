@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Kafka Food Delivery Tracker</title>
+  <!-- Google Fonts: Inter and Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="glass-bg"></div>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-logo">
+        <div class="pulse-indicator"></div>
+        <h1>Kafka Order Stream</h1>
+      </div>
+      <p class="subtitle">Real-time event-driven food delivery status board</p>
+    </header>
+
+    <!-- Summary Statistics Panel -->
+    <section class="summary-section">
+      <div class="summary-card glass-card">
+        <h3>Active Orders</h3>
+        <p id="stat-active-count">0</p>
+      </div>
+      <div class="summary-card glass-card">
+        <h3>Most Popular Restaurant</h3>
+        <p id="stat-top-restaurant">--</p>
+      </div>
+      <div class="summary-card glass-card">
+        <h3>Connection Status</h3>
+        <p id="stat-connection" class="status-disconnected">Offline</p>
+      </div>
+    </section>
+
+    <!-- Active Orders Grid -->
+    <main class="dashboard-main">
+      <h2>Live Orders Progress</h2>
+      <div id="orders-grid" class="orders-grid">
+        <!-- Order cards will be injected here dynamically -->
+        <div class="no-orders-message glass-card" id="no-orders">
+          <div class="coffee-icon">☕</div>
+          <p>No active orders being tracked at the moment.</p>
+          <span>Run the Kafka producer to see events populate in real-time.</span>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <p>Powered by Apache Kafka, Node.js & Kafdrop UI</p>
+    </footer>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
